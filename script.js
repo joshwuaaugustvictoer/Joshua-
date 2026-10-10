@@ -8,20 +8,20 @@ const heroData = [
 ];
 
 const comicTerbaru = [
-  { title: 'Reincarnated as a Sword God', type: 'Manhwa', chapter: 45, rating: 9.2, seed: 'c1' },
+  { title: 'why kucingku bloon', type: 'Manhwa', chapter: 45, rating: 9.2, seed: 'c1' },
   { title: 'My Vampire Roommate', type: 'Manga', chapter: 112, rating: 8.7, seed: 'c2' },
   { title: 'Level Up Alone', type: 'Manhwa', chapter: 78, rating: 9.5, seed: 'c3' },
-  { title: 'The Last Alchemist', type: 'Manhua', chapter: 33, rating: 8.4, seed: 'c4' },
+  { title: 'The Last Alchemist tapi boong', type: 'Manhua', chapter: 33, rating: 8.4, seed: 'c4' },
   { title: 'Frost Queen Reborn', type: 'Manhwa', chapter: 91, rating: 9.0, seed: 'c5' },
   { title: 'Cyber Ninja 2099', type: 'Manga', chapter: 24, rating: 8.6, seed: 'c6' },
   { title: 'Dragon Tamer Academy', type: 'Manhwa', chapter: 150, rating: 9.1, seed: 'c7' },
-  { title: 'The Blind Swordsman', type: 'Manhua', chapter: 67, rating: 8.8, seed: 'c8' },
+  { title: 'prabowo sebagai presiden', type: 'Manhua', chapter: 67, rating: 8.8, seed: 'c8' },
 ];
 
 const comicPopuler = [
   { title: 'Solo Ascension', type: 'Manhwa', chapter: 220, rating: 9.7, seed: 'p1' },
   { title: 'Tower of Trials', type: 'Manhwa', chapter: 180, rating: 9.3, seed: 'p2' },
-  { title: 'Demon King Returns', type: 'Manga', chapter: 95, rating: 9.2, seed: 'p3' },
+  { title: 'Demon joshua king', type: 'Manga', chapter: 95, rating: 9.2, seed: 'p3' },
   { title: 'Healer Gone Rogue', type: 'Manhua', chapter: 140, rating: 9.0, seed: 'p4' },
   { title: 'Silver Knight Saga', type: 'Manhwa', chapter: 76, rating: 8.9, seed: 'p5' },
   { title: 'Magic Chef Isekai', type: 'Manga', chapter: 58, rating: 8.5, seed: 'p6' },
