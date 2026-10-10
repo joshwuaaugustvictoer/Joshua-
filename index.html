@@ -347,3 +347,330 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 }
 .back-top.show { opacity: 1; pointer-events: auto; }
 .back-top:hover { background: #e04a4a; }
+
+/* ===== POPUP DETAIL KOMIK ===== */
+.modal-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,.85); backdrop-filter: blur(6px);
+  display: none; align-items: center; justify-content: center;
+  z-index: 999; padding: 20px;
+}
+.modal-overlay.show { display: flex; }
+.modal-box {
+  background: var(--bg-2); border: 1px solid var(--border);
+  border-radius: 14px; max-width: 480px; width: 100%;
+  padding: 20px; position: relative;
+  animation: pop .25s ease; max-height: 90vh; overflow-y: auto;
+}
+@keyframes pop {
+  from { transform: scale(.9); opacity: 0; }
+  to   { transform: scale(1); opacity: 1; }
+}
+.modal-close {
+  position: absolute; top: 12px; right: 12px;
+  width: 32px; height: 32px; border-radius: 8px;
+  background: var(--bg-3); display: grid; place-items: center;
+  font-size: 1.2rem;
+}
+.modal-close:hover { background: var(--accent); color: #fff; }
+.modal-head {
+  display: flex; gap: 14px; margin-bottom: 14px;
+  padding-right: 30px;
+}
+.modal-cover {
+  width: 100px; aspect-ratio: 3/4;
+  border-radius: 10px; object-fit: cover; flex-shrink: 0;
+}
+.modal-head-info { flex: 1; min-width: 0; }
+.modal-box h3 { font-size: 1.15rem; font-weight: 700; margin-bottom: 8px; }
+.modal-meta {
+  display: flex; gap: 10px; font-size: .8rem;
+  color: var(--text-dim); margin-bottom: 8px; flex-wrap: wrap;
+}
+.modal-meta i { color: var(--accent-2); }
+.modal-bookmark {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 6px 12px; border-radius: 8px;
+  background: var(--bg-3); font-size: .8rem;
+  font-weight: 600; transition: .2s;
+}
+.modal-bookmark:hover { background: var(--accent); }
+.modal-bookmark.saved { background: var(--accent); }
+
+.chapter-picker {
+  margin: 14px 0;
+  max-height: 200px; overflow-y: auto;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg);
+}
+.chapter-picker-head {
+  padding: 10px 12px; font-size: .78rem;
+  color: var(--text-dim); font-weight: 700;
+  text-transform: uppercase; letter-spacing: .5px;
+  border-bottom: 1px solid var(--border);
+  position: sticky; top: 0; background: var(--bg); z-index: 1;
+}
+.chapter-picker-item {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 12px; cursor: pointer; transition: .2s;
+  border-bottom: 1px solid var(--border);
+  font-size: .85rem;
+}
+.chapter-picker-item:last-child { border-bottom: none; }
+.chapter-picker-item:hover { background: var(--bg-3); color: var(--accent); }
+.chapter-picker-item .latest {
+  font-size: .68rem; padding: 2px 6px;
+  background: var(--accent); color: #fff;
+  border-radius: 4px; font-weight: 700;
+}
+
+/* ===== HALAMAN BACA ===== */
+.reader {
+  position: fixed; inset: 0;
+  background: #0a0b0e; z-index: 1000;
+  display: none; flex-direction: column; overflow: hidden;
+}
+.reader.show { display: flex; }
+.reader-topbar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 16px;
+  background: rgba(23,26,33,.95);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0; gap: 10px;
+}
+.reader-back {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 14px; background: var(--bg-3);
+  border-radius: 8px; font-size: .85rem;
+  font-weight: 600; transition: .2s; flex-shrink: 0;
+}
+.reader-back:hover { background: var(--accent); }
+.reader-title {
+  font-size: .9rem; font-weight: 700; flex: 1;
+  text-align: center; white-space: nowrap;
+  overflow: hidden; text-overflow: ellipsis; padding: 0 8px;
+}
+.reader-title small {
+  display: block; font-size: .72rem;
+  color: var(--text-dim); font-weight: 500;
+}
+.reader-actions { display: flex; gap: 6px; flex-shrink: 0; }
+.reader-actions button {
+  width: 36px; height: 36px; border-radius: 8px;
+  background: var(--bg-3); display: grid; place-items: center;
+  transition: .2s;
+}
+.reader-actions button:hover { background: var(--accent); }
+.reader-actions button.active { background: var(--accent); }
+
+.reader-body {
+  flex: 1; overflow-y: auto;
+  background: #0a0b0e;
+  -webkit-overflow-scrolling: touch;
+  position: relative;
+}
+.reader-pages { max-width: 900px; margin: 0 auto; padding: 0; }
+.reader-pages img {
+  width: 100%; display: block; margin: 0 auto;
+  background: #1a1a1a; min-height: 100px;
+}
+.reader.single .reader-pages img { display: none; }
+.reader.single .reader-pages img.active { display: block; }
+
+.reader-footer {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 16px;
+  background: rgba(23,26,33,.95);
+  border-top: 1px solid var(--border);
+  flex-shrink: 0; gap: 10px;
+}
+.reader-nav-btn {
+  padding: 10px 16px; background: var(--bg-3);
+  border-radius: 8px; font-size: .85rem;
+  font-weight: 600; display: flex; align-items: center; gap: 6px;
+  transition: .2s; flex-shrink: 0;
+}
+.reader-nav-btn:hover:not(:disabled) { background: var(--accent); }
+.reader-nav-btn:disabled { opacity: .35; cursor: not-allowed; }
+.reader-counter {
+  font-size: .78rem; color: var(--text-dim);
+  font-weight: 600; white-space: nowrap; flex: 1;
+  text-align: center;
+}
+.reader-chapter-select {
+  background: var(--bg-3); color: var(--text);
+  border: 1px solid var(--border); border-radius: 8px;
+  padding: 8px 10px; font-size: .8rem;
+  font-family: inherit; outline: none;
+  max-width: 160px;
+}
+
+/* ===== TOAST ===== */
+.toast {
+  position: fixed; bottom: 90px; left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: var(--accent); color: #fff;
+  padding: 10px 20px; border-radius: 30px;
+  font-size: .85rem; font-weight: 600;
+  opacity: 0; pointer-events: none;
+  transition: .3s; z-index: 2000;
+  box-shadow: var(--shadow);
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 960px) {
+  .main-grid { grid-template-columns: 1fr; }
+  .footer-inner { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 720px) {
+  .nav {
+    position: fixed; top: 64px; left: 0; right: 0;
+    background: var(--bg-2); flex-direction: column;
+    padding: 12px; border-bottom: 1px solid var(--border);
+    transform: translateY(-120%); transition: .3s;
+    justify-content: flex-start;
+  }
+  .nav.open { transform: translateY(0); }
+  .btn-menu { display: grid; }
+  .hero-slider { height: 260px; }
+  .hero-info { padding: 18px; }
+  .hero-info h1 { font-size: 1.3rem; }
+  .comic-grid {
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 12px;
+  }
+  .chapter-item { grid-template-columns: 44px 1fr; }
+  .chapter-item img { width: 44px; height: 58px; }
+  .chapter-time { grid-column: 2; font-size: .68rem; }
+  .footer-inner { grid-template-columns: 1fr; gap: 20px; }
+  .reader-title { font-size: .78rem; }
+  .reader-back span { display: none; }
+  .reader-chapter-select { max-width: 100px; font-size: .72rem; }
+}
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="container header-inner">
+    <a href="#" class="logo">
+      <i class="fa-solid fa-book-open"></i>
+      <span>Komik<span class="accent">Ku</span></span>
+    </a>
+    <nav class="nav" id="nav">
+      <a data-page="home" class="active">Beranda</a>
+      <a data-page="komik">Komik</a>
+      <a data-page="genre">Genre</a>
+      <a data-page="terbaru">Terbaru</a>
+      <a data-page="populer">Populer</a>
+      <a data-page="bookmark">Bookmark</a>
+    </nav>
+    <div class="header-actions">
+      <button class="btn-search" id="btnSearch" aria-label="Cari">
+        <i class="fa-solid fa-magnifying-glass"></i>
+      </button>
+      <button class="btn-menu" id="btnMenu" aria-label="Menu">
+        <i class="fa-solid fa-bars"></i>
+      </button>
+    </div>
+  </div>
+  <div class="search-bar" id="searchBar">
+    <div class="container">
+      <input type="text" id="searchInput" placeholder="Cari judul komik..." />
+    </div>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="container">
+    <div class="hero-slider" id="heroSlider"></div>
+    <div class="hero-dots" id="heroDots"></div>
+  </div>
+</section>
+
+<main class="container main-grid">
+  <div class="content">
+    <section class="section">
+      <div class="section-head">
+        <h2><i class="fa-solid fa-fire"></i> Update Terbaru</h2>
+        <a class="see-all" data-page="terbaru">Lihat semua <i class="fa-solid fa-chevron-right"></i></a>
+      </div>
+      <div class="comic-grid" id="gridTerbaru"></div>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <h2><i class="fa-solid fa-crown"></i> Populer Minggu Ini</h2>
+        <a class="see-all" data-page="populer">Lihat semua <i class="fa-solid fa-chevron-right"></i></a>
+      </div>
+      <div class="comic-grid" id="gridPopuler"></div>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <h2><i class="fa-solid fa-clock-rotate-left"></i> Chapter Baru</h2>
+      </div>
+      <div class="chapter-list" id="chapterList"></div>
+    </section>
+  </div>
+
+  <aside class="sidebar">
+    <div class="widget">
+      <h3 class="widget-title"><i class="fa-solid fa-ranking-star"></i> Top Ranking</h3>
+      <ol class="ranking-list" id="rankingList"></ol>
+    </div>
+    <div class="widget">
+      <h3 class="widget-title"><i class="fa-solid fa-tags"></i> Genre</h3>
+      <div class="genre-tags" id="genreTags"></div>
+    </div>
+    <div class="widget widget-cta">
+      <h3>Gabung Discord</h3>
+      <p>Diskusi komik favorit bareng member lain.</p>
+      <a href="#" class="btn-cta">Join Now</a>
+    </div>
+  </aside>
+</main>
+
+<footer class="footer">
+  <div class="container footer-inner">
+    <div class="footer-col">
+      <a href="#" class="logo">
+        <i class="fa-solid fa-book-open"></i>
+        <span>Komik<span class="accent">Ku</span></span>
+      </a>
+      <p>Tempat baca komik online gratis, update tiap hari. Prototipe belajar.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Navigasi</h4>
+      <a href="#">Beranda</a>
+      <a href="#">Komik</a>
+      <a href="#">Genre</a>
+      <a href="#">Terbaru</a>
+    </div>
+    <div class="footer-col">
+      <h4>Bantuan</h4>
+      <a href="#">FAQ</a>
+      <a href="#">Kontak</a>
+      <a href="#">DMCA</a>
+      <a href="#">Privasi</a>
+    </div>
+    <div class="footer-col">
+      <h4>Ikuti Kami</h4>
+      <div class="socials">
+        <a href="#"><i class="fa-brands fa-discord"></i></a>
+        <a href="#"><i class="fa-brands fa-telegram"></i></a>
+        <a href="#"><i class="fa-brands fa-instagram"></i></a>
+        <a href="#"><i class="fa-brands fa-x-twitter"></i></a>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>&copy; 2025 KomikKu. Prototipe belajar.</p>
+  </div>
+</footer>
+
+<button class="back-top" id="backTop" aria-label="Kembali ke atas">
+  <i class="fa-solid fa-arrow-up"></i>
+</button>
