@@ -1156,3 +1156,250 @@ document.addEventListener('click', (e) => {
   const hero = e.target.closest('.btn-hero');
   if (hero && hero.dataset.id) { bukaModal(hero.dataset.id); return; }
 });
+
+/* ===== HALAMAN BACA ===== */
+const reader         = document.getElementById('reader');
+const readerBack     = document.getElementById('readerBack');
+const readerTitle    = document.getElementById('readerTitle');
+const readerPages    = document.getElementById('readerPages');
+const readerBody     = document.getElementById('readerBody');
+const readerCounter  = document.getElementById('readerCounter');
+const readerPrev     = document.getElementById('readerPrev');
+const readerNext     = document.getElementById('readerNext');
+const readerFullscreen = document.getElementById('readerFullscreen');
+const readerMode     = document.getElementById('readerMode');
+const readerChapterSelect = document.getElementById('readerChapterSelect');
+
+let readerState = {
+  komik: null,
+  chapter: null,
+  page: 0,
+  totalPages: 0,
+  mode: 'scroll',
+};
+
+function bukaReader(komikId, chapterNumber) {
+  const k = getById(komikId);
+  if (!k) return;
+  const c = k.chapters.find(x => x.number === chapterNumber) || k.chapters[0];
+  if (!c) return;
+
+  readerState.komik = k;
+  readerState.chapter = c;
+  readerState.page = 0;
+
+  readerChapterSelect.innerHTML = k.chapters.map(ch =>
+    `<option value="${ch.number}" ${ch.number === c.number ? 'selected' : ''}>Chapter ${ch.number}</option>`
+  ).join('');
+
+  renderReaderPages();
+  reader.classList.add('show');
+  readerBody.scrollTop = 0;
+  document.body.style.overflow = 'hidden';
+}
+
+function renderReaderPages() {
+  const k = readerState.komik;
+  const c = readerState.chapter;
+  if (!k || !c) return;
+
+  readerTitle.innerHTML = `
+    <span>${k.title}</span>
+    <small>Chapter ${c.number}</small>
+  `;
+
+  const pages = getPages(c);
+  readerState.totalPages = pages.length;
+  readerState.page = 0;
+
+  readerPages.innerHTML = pages.map((src, i) => `
+    <img src="${src}" alt="Halaman ${i + 1}" data-index="${i}" loading="lazy" />
+  `).join('');
+
+  updatePageVisibility();
+  updateCounter();
+  updateNavButtons();
+}
+
+function updatePageVisibility() {
+  const imgs = readerPages.querySelectorAll('img');
+  if (readerState.mode === 'single') {
+    reader.classList.add('single');
+    imgs.forEach((img, i) => img.classList.toggle('active', i === readerState.page));
+  } else {
+    reader.classList.remove('single');
+    imgs.forEach(img => img.classList.remove('active'));
+  }
+}
+
+function updateCounter() {
+  if (readerState.mode === 'single') {
+    readerCounter.textContent = `${readerState.page + 1} / ${readerState.totalPages}`;
+  } else {
+    readerCounter.textContent = `Chapter ${readerState.chapter.number}`;
+  }
+}
+
+function updateNavButtons() {
+  if (readerState.mode === 'single') {
+    const idx = readerState.komik.chapters.findIndex(c => c.number === readerState.chapter.number);
+    const isLastChapter = idx <= 0;
+    const isLastPage = readerState.page >= readerState.totalPages - 1;
+    const isFirstChapter = idx >= readerState.komik.chapters.length - 1;
+    const isFirstPage = readerState.page <= 0;
+    readerNext.disabled = isLastChapter && isLastPage;
+    readerPrev.disabled = isFirstChapter && isFirstPage;
+  } else {
+    const idx = readerState.komik.chapters.findIndex(c => c.number === readerState.chapter.number);
+    readerPrev.disabled = idx >= readerState.komik.chapters.length - 1;
+    readerNext.disabled = idx <= 0;
+  }
+}
+
+function tutupReader() {
+  reader.classList.remove('show');
+  if (!modalOverlay.classList.contains('show')) document.body.style.overflow = '';
+}
+
+readerBack.addEventListener('click', tutupReader);
+
+/* Ganti chapter via dropdown */
+readerChapterSelect.addEventListener('change', (e) => {
+  const num = parseInt(e.target.value);
+  const c = readerState.komik.chapters.find(x => x.number === num);
+  if (c) {
+    readerState.chapter = c;
+    readerState.page = 0;
+    renderReaderPages();
+    readerBody.scrollTop = 0;
+  }
+});
+
+/* Ganti mode baca */
+readerMode.addEventListener('click', () => {
+  readerState.mode = readerState.mode === 'scroll' ? 'single' : 'scroll';
+  readerMode.classList.toggle('active', readerState.mode === 'single');
+  updatePageVisibility();
+  updateCounter();
+  updateNavButtons();
+  if (readerState.mode === 'single') readerBody.scrollTop = 0;
+});
+
+/* Prev */
+readerPrev.addEventListener('click', () => {
+  if (readerState.mode === 'single') {
+    if (readerState.page > 0) {
+      readerState.page--;
+      updatePageVisibility();
+      updateCounter();
+      updateNavButtons();
+      readerBody.scrollTop = 0;
+    } else {
+      const idx = readerState.komik.chapters.findIndex(c => c.number === readerState.chapter.number);
+      if (idx < readerState.komik.chapters.length - 1) {
+        readerState.chapter = readerState.komik.chapters[idx + 1];
+        readerChapterSelect.value = readerState.chapter.number;
+        readerState.page = 0;
+        renderReaderPages();
+      }
+    }
+  } else {
+    const idx = readerState.komik.chapters.findIndex(c => c.number === readerState.chapter.number);
+    if (idx < readerState.komik.chapters.length - 1) {
+      readerState.chapter = readerState.komik.chapters[idx + 1];
+      readerChapterSelect.value = readerState.chapter.number;
+      renderReaderPages();
+      readerBody.scrollTop = 0;
+    }
+  }
+});
+
+/* Next */
+readerNext.addEventListener('click', () => {
+  if (readerState.mode === 'single') {
+    if (readerState.page < readerState.totalPages - 1) {
+      readerState.page++;
+      updatePageVisibility();
+      updateCounter();
+      updateNavButtons();
+      readerBody.scrollTop = 0;
+    } else {
+      const idx = readerState.komik.chapters.findIndex(c => c.number === readerState.chapter.number);
+      if (idx > 0) {
+        readerState.chapter = readerState.komik.chapters[idx - 1];
+        readerChapterSelect.value = readerState.chapter.number;
+        readerState.page = 0;
+        renderReaderPages();
+      }
+    }
+  } else {
+    const idx = readerState.komik.chapters.findIndex(c => c.number === readerState.chapter.number);
+    if (idx > 0) {
+      readerState.chapter = readerState.komik.chapters[idx - 1];
+      readerChapterSelect.value = readerState.chapter.number;
+      renderReaderPages();
+      readerBody.scrollTop = 0;
+    }
+  }
+});
+
+/* Fullscreen */
+readerFullscreen.addEventListener('click', () => {
+  if (!document.fullscreenElement) {
+    reader.requestFullscreen?.().catch(() => {});
+    readerFullscreen.innerHTML = '<i class="fa-solid fa-compress"></i>';
+  } else {
+    document.exitFullscreen?.();
+    readerFullscreen.innerHTML = '<i class="fa-solid fa-expand"></i>';
+  }
+});
+
+/* Escape + panah keyboard */
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    if (reader.classList.contains('show')) tutupReader();
+    else if (modalOverlay.classList.contains('show')) tutupModal();
+  }
+  if (reader.classList.contains('show') && readerState.mode === 'single') {
+    if (e.key === 'ArrowRight') readerNext.click();
+    if (e.key === 'ArrowLeft') readerPrev.click();
+  }
+});
+
+/* ===== NAVBAR — page switching ===== */
+document.querySelectorAll('.nav a[data-page], .see-all[data-page]').forEach(el => {
+  el.addEventListener('click', () => {
+    const page = el.dataset.page;
+    document.querySelectorAll('.nav a').forEach(a => a.classList.remove('active'));
+    document.querySelector(`.nav a[data-page="${page}"]`)?.classList.add('active');
+    nav.classList.remove('open');
+
+    if (page === 'bookmark') {
+      const ids = getBookmarks();
+      const hasil = komikList.filter(k => ids.includes(k.id));
+      document.getElementById('gridTerbaru').innerHTML = hasil.length
+        ? hasil.map(comicCard).join('')
+        : `<p style="color:var(--text-dim);grid-column:1/-1;text-align:center;padding:20px">Belum ada bookmark. Klik ikon bookmark pada komik untuk menyimpan.</p>`;
+      showToast(`${hasil.length} komik di bookmark`);
+    } else if (page === 'populer') {
+      renderGridPopuler();
+    } else {
+      renderGridTerbaru();
+    }
+  });
+});
+
+/* ===== GENRE FILTER ===== */
+document.getElementById('genreTags').addEventListener('click', (e) => {
+  const a = e.target.closest('[data-genre]');
+  if (!a) return;
+  const g = a.dataset.genre.toLowerCase();
+  const hasil = komikList.filter(k => k.type.toLowerCase().includes(g) || k.title.toLowerCase().includes(g));
+  document.getElementById('gridTerbaru').innerHTML = hasil.length
+    ? hasil.map(comicCard).join('')
+    : `<p style="color:var(--text-dim);grid-column:1/-1;text-align:center;padding:20px">Belum ada komik genre "${a.dataset.genre}"</p>`;
+  showToast(`Genre: ${a.dataset.genre}`);
+});
+</script>
+</body>
+</html>
