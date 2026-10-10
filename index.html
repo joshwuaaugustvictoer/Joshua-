@@ -674,3 +674,270 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 <button class="back-top" id="backTop" aria-label="Kembali ke atas">
   <i class="fa-solid fa-arrow-up"></i>
 </button>
+
+<!-- POPUP DETAIL KOMIK -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal-box">
+    <button class="modal-close" id="modalClose">&times;</button>
+    <div class="modal-head">
+      <img class="modal-cover" id="modalCover" src="" alt="" />
+      <div class="modal-head-info">
+        <h3 id="modalTitle"></h3>
+        <div class="modal-meta" id="modalMeta"></div>
+        <button class="modal-bookmark" id="modalBookmark">
+          <i class="fa-regular fa-bookmark"></i> <span>Bookmark</span>
+        </button>
+      </div>
+    </div>
+    <div class="chapter-picker" id="chapterPicker">
+      <div class="chapter-picker-head">Pilih Chapter</div>
+      <div id="chapterPickerList"></div>
+    </div>
+  </div>
+</div>
+
+<!-- HALAMAN BACA -->
+<div class="reader" id="reader">
+  <div class="reader-topbar">
+    <button class="reader-back" id="readerBack">
+      <i class="fa-solid fa-arrow-left"></i> <span>Kembali</span>
+    </button>
+    <div class="reader-title" id="readerTitle">
+      <span>Judul</span>
+      <small>Chapter 1</small>
+    </div>
+    <div class="reader-actions">
+      <select class="reader-chapter-select" id="readerChapterSelect"></select>
+      <button id="readerMode" title="Ganti mode baca">
+        <i class="fa-solid fa-scroll"></i>
+      </button>
+      <button id="readerFullscreen" title="Fullscreen">
+        <i class="fa-solid fa-expand"></i>
+      </button>
+    </div>
+  </div>
+
+  <div class="reader-body" id="readerBody">
+    <div class="reader-pages" id="readerPages"></div>
+  </div>
+
+  <div class="reader-footer">
+    <button class="reader-nav-btn" id="readerPrev">
+      <i class="fa-solid fa-chevron-left"></i>
+    </button>
+    <span class="reader-counter" id="readerCounter">1 / 1</span>
+    <button class="reader-nav-btn" id="readerNext">
+      <i class="fa-solid fa-chevron-right"></i>
+    </button>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+/* =====================================================
+   KomikKu — Script utama
+   ===================================================== */
+
+/* ===== HELPER GAMBAR ===== */
+const fallbackCover = (seed) => `https://picsum.photos/seed/${seed}/300/400`;
+const getCover = (item) => item.cover || fallbackCover(item.id || item.title);
+
+function getPages(chapter) {
+  if (chapter.pages && chapter.pages.length) return chapter.pages;
+  return [1,2,3,4,5].map(n => `https://picsum.photos/seed/${chapter.number}-${n}/900/1300`);
+}
+
+/* ===== DATA KOMIK ===== */
+const komikList = [
+  {
+    id: 'komik-1',
+    title: 'Reincarnated as a Sword God',
+    type: 'Manhwa', rating: 9.2,
+    chapters: [
+      { number: 45, pages: [] },
+      { number: 44, pages: [] },
+      { number: 43, pages: [] },
+    ]
+  },
+  {
+    id: 'komik-2',
+    title: 'My Vampire Roommate',
+    type: 'Manga', rating: 8.7,
+    chapters: [
+      { number: 112, pages: [] },
+      { number: 111, pages: [] },
+    ]
+  },
+  {
+    id: 'komik-3',
+    title: 'Level Up Alone',
+    type: 'Manhwa', rating: 9.5,
+    chapters: [
+      { number: 78, pages: [] },
+      { number: 77, pages: [] },
+      { number: 76, pages: [] },
+      { number: 75, pages: [] },
+    ]
+  },
+  {
+    id: 'komik-4',
+    title: 'The Last Alchemist',
+    type: 'Manhua', rating: 8.4,
+    chapters: [{ number: 33, pages: [] }]
+  },
+  {
+    id: 'komik-5',
+    title: 'Frost Queen Reborn',
+    type: 'Manhwa', rating: 9.0,
+    chapters: [{ number: 91, pages: [] }]
+  },
+  {
+    id: 'komik-6',
+    title: 'Cyber Ninja 2099',
+    type: 'Manga', rating: 8.6,
+    chapters: [{ number: 24, pages: [] }]
+  },
+  {
+    id: 'komik-7',
+    title: 'Dragon Tamer Academy',
+    type: 'Manhwa', rating: 9.1,
+    chapters: [{ number: 150, pages: [] }]
+  },
+  {
+    id: 'komik-8',
+    title: 'The Blind Swordsman',
+    type: 'Manhua', rating: 8.8,
+    chapters: [{ number: 67, pages: [] }]
+  },
+  {
+    id: 'komik-9',
+    title: 'Solo Ascension',
+    type: 'Manhwa', rating: 9.7,
+    chapters: [{ number: 220, pages: [] }]
+  },
+  {
+    id: 'komik-10',
+    title: 'Tower of Trials',
+    type: 'Manhwa', rating: 9.3,
+    chapters: [{ number: 180, pages: [] }]
+  },
+  {
+    id: 'komik-11',
+    title: 'Demon King Returns',
+    type: 'Manga', rating: 9.2,
+    chapters: [{ number: 95, pages: [] }]
+  },
+  {
+    id: 'komik-12',
+    title: 'Healer Gone Rogue',
+    type: 'Manhua', rating: 9.0,
+    chapters: [{ number: 140, pages: [] }]
+  },
+  {
+    id: 'komik-13',
+    title: 'Silver Knight Saga',
+    type: 'Manhwa', rating: 8.9,
+    chapters: [{ number: 76, pages: [] }]
+  },
+  {
+    id: 'komik-14',
+    title: 'Magic Chef Isekai',
+    type: 'Manga', rating: 8.5,
+    chapters: [{ number: 58, pages: [] }]
+  },
+  {
+    id: 'komik-15',
+    title: 'Shadow Monarch Reborn',
+    type: 'Manhwa', rating: 9.4,
+    chapters: [{ number: 128, pages: [] }]
+  },
+  {
+    id: 'komik-16',
+    title: 'Dungeon Reset Chronicles',
+    type: 'Manhwa', rating: 9.1,
+    chapters: [{ number: 87, pages: [] }]
+  },
+  {
+    id: 'komik-17',
+    title: 'The Blade of Dawn',
+    type: 'Manhwa', rating: 8.9,
+    chapters: [{ number: 204, pages: [] }]
+  },
+  {
+    id: 'komik-18',
+    title: 'Academy of Fallen Stars',
+    type: 'Manga', rating: 9.0,
+    chapters: [{ number: 56, pages: [] }]
+  },
+];
+
+/* Helpers data */
+const chapterTerakhir = (k) => k.chapters[0]?.number || 0;
+const getById = (id) => komikList.find(k => k.id === id);
+
+/* ===== BOOKMARK (localStorage) ===== */
+const BOOKMARK_KEY = 'komikku_bookmarks';
+function getBookmarks() {
+  try { return JSON.parse(localStorage.getItem(BOOKMARK_KEY) || '[]'); }
+  catch { return []; }
+}
+function isBookmarked(id) { return getBookmarks().includes(id); }
+function toggleBookmark(id) {
+  let arr = getBookmarks();
+  if (arr.includes(id)) {
+    arr = arr.filter(x => x !== id);
+    showToast('Dihapus dari bookmark');
+  } else {
+    arr.push(id);
+    showToast('Ditambahkan ke bookmark');
+  }
+  localStorage.setItem(BOOKMARK_KEY, JSON.stringify(arr));
+  renderGridTerbaru();
+  renderGridPopuler();
+  updateModalBookmarkBtn();
+}
+
+/* ===== TOAST ===== */
+const toastEl = document.getElementById('toast');
+let toastTimer;
+function showToast(msg) {
+  toastEl.textContent = msg;
+  toastEl.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => toastEl.classList.remove('show'), 1800);
+}
+
+/* ===== RENDER KARTU ===== */
+function comicCard(item) {
+  const latest = chapterTerakhir(item);
+  const saved = isBookmarked(item.id);
+  return `
+    <div class="comic-card" data-id="${item.id}">
+      <div class="comic-thumb">
+        <img src="${getCover(item)}" alt="${item.title}" loading="lazy" />
+        <span class="comic-type">${item.type}</span>
+        <span class="comic-chapter">Ch. ${latest}</span>
+        <button class="bookmark-btn ${saved ? 'saved' : ''}" data-bookmark="${item.id}" aria-label="Bookmark">
+          <i class="fa-${saved ? 'solid' : 'regular'} fa-bookmark"></i>
+        </button>
+      </div>
+      <div class="comic-info">
+        <h3 class="comic-title">${item.title}</h3>
+        <div class="comic-rating">
+          <i class="fa-solid fa-star"></i> ${item.rating}
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function renderGridTerbaru() {
+  const sorted = [...komikList].sort((a,b) => chapterTerakhir(b) - chapterTerakhir(a));
+  document.getElementById('gridTerbaru').innerHTML = sorted.slice(0, 8).map(comicCard).join('');
+}
+function renderGridPopuler() {
+  const sorted = [...komikList].sort((a,b) => b.rating - a.rating);
+  document.getElementById('gridPopuler').innerHTML = sorted.slice(0, 8).map(comicCard).join('');
+}
