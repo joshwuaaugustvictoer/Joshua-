@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>KomikKu — Baca Komik Online</title>
+  <meta name="description" content="Baca komik online gratis, update setiap hari." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ===== HEADER ===== -->
+  <header class="header">
+    <div class="container header-inner">
+      <a href="#" class="logo">
+        <i class="fa-solid fa-book-open"></i>
+        <span>Komik<span class="accent">Ku</span></span>
+      </a>
+
+      <nav class="nav" id="nav">
+        <a href="#" class="active">Beranda</a>
+        <a href="#">Komik</a>
+        <a href="#">Genre</a>
+        <a href="#">Terbaru</a>
+        <a href="#">Populer</a>
+        <a href="#">Bookmark</a>
+      </nav>
+
+      <div class="header-actions">
+        <button class="btn-search" id="btnSearch" aria-label="Cari">
+          <i class="fa-solid fa-magnifying-glass"></i>
+        </button>
+        <button class="btn-menu" id="btnMenu" aria-label="Menu">
+          <i class="fa-solid fa-bars"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Search bar -->
+    <div class="search-bar" id="searchBar">
+      <div class="container">
+        <input type="text" id="searchInput" placeholder="Cari judul komik..." />
+      </div>
+    </div>
+  </header>
+
+  <!-- ===== HERO SLIDER ===== -->
+  <section class="hero">
+    <div class="container">
+      <div class="hero-slider" id="heroSlider"></div>
+      <div class="hero-dots" id="heroDots"></div>
+    </div>
+  </section>
+
+  <!-- ===== MAIN ===== -->
+  <main class="container main-grid">
+    <div class="content">
+      <section class="section">
+        <div class="section-head">
+          <h2><i class="fa-solid fa-fire"></i> Update Terbaru</h2>
+          <a href="#" class="see-all">Lihat semua <i class="fa-solid fa-chevron-right"></i></a>
+        </div>
+        <div class="comic-grid" id="gridTerbaru"></div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <h2><i class="fa-solid fa-crown"></i> Populer Minggu Ini</h2>
+          <a href="#" class="see-all">Lihat semua <i class="fa-solid fa-chevron-right"></i></a>
+        </div>
+        <div class="comic-grid" id="gridPopuler"></div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <h2><i class="fa-solid fa-clock-rotate-left"></i> Chapter Baru</h2>
+        </div>
+        <div class="chapter-list" id="chapterList"></div>
+      </section>
+    </div>
+
+    <aside class="sidebar">
+      <div class="widget">
+        <h3 class="widget-title"><i class="fa-solid fa-ranking-star"></i> Top Ranking</h3>
+        <ol class="ranking-list" id="rankingList"></ol>
+      </div>
+
+      <div class="widget">
+        <h3 class="widget-title"><i class="fa-solid fa-tags"></i> Genre</h3>
+        <div class="genre-tags" id="genreTags"></div>
+      </div>
+
+      <div class="widget widget-cta">
+        <h3>Gabung Discord</h3>
+        <p>Diskusi komik favorit bareng member lain.</p>
+        <a href="#" class="btn-cta">Join Now</a>
+      </div>
+    </aside>
+  </main>
+
+  <!-- ===== FOOTER ===== -->
+  <footer class="footer">
+    <div class="container footer-inner">
+      <div class="footer-col">
+        <a href="#" class="logo">
+          <i class="fa-solid fa-book-open"></i>
+          <span>Komik<span class="accent">Ku</span></span>
+        </a>
+        <p>Tempat baca komik online gratis, update tiap hari. Dibuat untuk keperluan belajar &amp; prototipe.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Navigasi</h4>
+        <a href="#">Beranda</a>
+        <a href="#">Komik</a>
+        <a href="#">Genre</a>
+        <a href="#">Terbaru</a>
+      </div>
+      <div class="footer-col">
+        <h4>Bantuan</h4>
+        <a href="#">FAQ</a>
+        <a href="#">Kontak</a>
+        <a href="#">DMCA</a>
+        <a href="#">Privasi</a>
+      </div>
+      <div class="footer-col">
+        <h4>Ikuti Kami</h4>
+        <div class="socials">
+          <a href="#"><i class="fa-brands fa-discord"></i></a>
+          <a href="#"><i class="fa-brands fa-telegram"></i></a>
+          <a href="#"><i class="fa-brands fa-instagram"></i></a>
+          <a href="#"><i class="fa-brands fa-x-twitter"></i></a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; 2026 KomikKu. Prototipe belajar. Bukan afiliasi situs manapun.</p>
+    </div>
+  </footer>
+
+  <button class="back-top" id="backTop" aria-label="Kembali ke atas">
+    <i class="fa-solid fa-arrow-up"></i>
+  </button>
+
+  <script src="script.js"></script>
+</body>
+</html>
