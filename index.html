@@ -941,3 +941,218 @@ function renderGridPopuler() {
   const sorted = [...komikList].sort((a,b) => b.rating - a.rating);
   document.getElementById('gridPopuler').innerHTML = sorted.slice(0, 8).map(comicCard).join('');
 }
+
+/* ===== HERO SLIDER ===== */
+const heroSlider = document.getElementById('heroSlider');
+const heroDots = document.getElementById('heroDots');
+const heroItems = komikList.slice(0, 4);
+
+heroItems.forEach((item, i) => {
+  const slide = document.createElement('div');
+  slide.className = 'hero-slide' + (i === 0 ? ' active' : '');
+  const bg = item.cover || `https://picsum.photos/seed/${item.id}/1200/500`;
+  slide.style.backgroundImage = `url(${bg})`;
+  slide.innerHTML = `
+    <div class="hero-info">
+      <span class="hero-badge">Featured</span>
+      <h1>${item.title}</h1>
+      <div class="hero-meta">
+        <span><i class="fa-solid fa-star" style="color:#ffb347"></i> ${item.rating}</span>
+        <span><i class="fa-solid fa-book"></i> ${item.type}</span>
+        <span><i class="fa-solid fa-list-ol"></i> Ch. ${chapterTerakhir(item)}</span>
+      </div>
+      <button class="btn-hero" data-id="${item.id}">
+        <i class="fa-solid fa-play"></i> Baca Sekarang
+      </button>
+    </div>
+  `;
+  heroSlider.appendChild(slide);
+
+  const dot = document.createElement('button');
+  if (i === 0) dot.classList.add('active');
+  dot.addEventListener('click', () => goToSlide(i));
+  heroDots.appendChild(dot);
+});
+
+let currentSlide = 0;
+const slides = heroSlider.querySelectorAll('.hero-slide');
+const dots = heroDots.querySelectorAll('button');
+function goToSlide(index) {
+  slides[currentSlide].classList.remove('active');
+  dots[currentSlide].classList.remove('active');
+  currentSlide = index;
+  slides[currentSlide].classList.add('active');
+  dots[currentSlide].classList.add('active');
+}
+setInterval(() => goToSlide((currentSlide + 1) % slides.length), 5000);
+
+/* ===== CHAPTER BARU ===== */
+function renderChapterBaru() {
+  const rows = [];
+  komikList.forEach(k => {
+    k.chapters.slice(0, 2).forEach((c, idx) => {
+      rows.push({
+        komikId: k.id,
+        title: k.title,
+        chapter: c.number,
+        time: idx === 0 ? 'Baru saja' : `${idx * 2} jam lalu`,
+        isNew: idx === 0,
+        seed: k.id,
+      });
+    });
+  });
+  rows.sort((a,b) => b.chapter - a.chapter);
+  document.getElementById('chapterList').innerHTML = rows.slice(0, 8).map(c => `
+    <div class="chapter-item" data-id="${c.komikId}" data-chapter="${c.chapter}">
+      <img src="${fallbackCover(c.seed)}" alt="${c.title}" loading="lazy" />
+      <div class="chapter-info">
+        <h4>${c.title}</h4>
+        <div class="chapter-meta">
+          <span>Chapter ${c.chapter} ${c.isNew ? '<span class="new">NEW</span>' : ''}</span>
+        </div>
+      </div>
+      <span class="chapter-time">${c.time}</span>
+    </div>
+  `).join('');
+}
+
+/* ===== RANKING ===== */
+function renderRanking() {
+  const sorted = [...komikList].sort((a,b) => b.rating - a.rating).slice(0, 5);
+  document.getElementById('rankingList').innerHTML = sorted.map((k, i) => `
+    <li data-id="${k.id}">
+      <span class="rank-num">${i + 1}</span>
+      <img class="rank-thumb" src="${getCover(k)}" alt="${k.title}" loading="lazy" />
+      <div class="rank-info">
+        <h4>${k.title}</h4>
+        <span><i class="fa-solid fa-star" style="color:#ffb347"></i> ${k.rating}</span>
+      </div>
+    </li>
+  `).join('');
+}
+
+/* ===== GENRE ===== */
+const genres = ['Action','Adventure','Comedy','Drama','Fantasy','Horror','Isekai','Martial Arts','Mystery','Romance','School','Sci-Fi','Slice of Life','Supernatural','Thriller'];
+function renderGenres() {
+  document.getElementById('genreTags').innerHTML = genres.map(g => `<a data-genre="${g}">${g}</a>`).join('');
+}
+
+/* ===== INISIALISASI ===== */
+renderGridTerbaru();
+renderGridPopuler();
+renderChapterBaru();
+renderRanking();
+renderGenres();
+
+/* ===== UI INTERACTIONS ===== */
+const btnSearch = document.getElementById('btnSearch');
+const searchBar = document.getElementById('searchBar');
+const searchInput = document.getElementById('searchInput');
+btnSearch.addEventListener('click', () => {
+  searchBar.classList.toggle('open');
+  if (searchBar.classList.contains('open')) searchInput.focus();
+});
+
+const btnMenu = document.getElementById('btnMenu');
+const nav = document.getElementById('nav');
+btnMenu.addEventListener('click', () => nav.classList.toggle('open'));
+
+const backTop = document.getElementById('backTop');
+window.addEventListener('scroll', () => backTop.classList.toggle('show', window.scrollY > 400));
+backTop.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+
+/* ===== SEARCH REAL-TIME ===== */
+searchInput.addEventListener('input', (e) => {
+  const q = e.target.value.trim().toLowerCase();
+  if (!q) {
+    renderGridTerbaru();
+    return;
+  }
+  const hasil = komikList.filter(k =>
+    k.title.toLowerCase().includes(q) || k.type.toLowerCase().includes(q)
+  );
+  document.getElementById('gridTerbaru').innerHTML = hasil.length
+    ? hasil.map(comicCard).join('')
+    : `<p style="color:var(--text-dim);grid-column:1/-1;text-align:center;padding:20px">Tidak ada hasil untuk "${q}"</p>`;
+});
+
+/* ===== POPUP DETAIL KOMIK ===== */
+const modalOverlay = document.getElementById('modalOverlay');
+const modalCover   = document.getElementById('modalCover');
+const modalTitle   = document.getElementById('modalTitle');
+const modalMeta    = document.getElementById('modalMeta');
+const modalBookmark = document.getElementById('modalBookmark');
+const chapterPickerList = document.getElementById('chapterPickerList');
+
+let activeComic = null;
+
+function updateModalBookmarkBtn() {
+  if (!activeComic) return;
+  const saved = isBookmarked(activeComic.id);
+  modalBookmark.classList.toggle('saved', saved);
+  modalBookmark.innerHTML = `
+    <i class="fa-${saved ? 'solid' : 'regular'} fa-bookmark"></i>
+    <span>${saved ? 'Tersimpan' : 'Bookmark'}</span>
+  `;
+}
+
+function bukaModal(id) {
+  const item = getById(id);
+  if (!item) return;
+  activeComic = item;
+
+  modalCover.src = getCover(item);
+  modalTitle.textContent = item.title;
+  modalMeta.innerHTML = `
+    <span><i class="fa-solid fa-star"></i> ${item.rating}</span>
+    <span><i class="fa-solid fa-book"></i> ${item.type}</span>
+    <span><i class="fa-solid fa-list-ol"></i> ${item.chapters.length} chapter</span>
+  `;
+  updateModalBookmarkBtn();
+
+  chapterPickerList.innerHTML = item.chapters.map((c, i) => `
+    <div class="chapter-picker-item" data-id="${item.id}" data-chapter="${c.number}">
+      <span>Chapter ${c.number}</span>
+      ${i === 0 ? '<span class="latest">TERBARU</span>' : ''}
+    </div>
+  `).join('');
+
+  modalOverlay.classList.add('show');
+  document.body.style.overflow = 'hidden';
+}
+
+function tutupModal() {
+  modalOverlay.classList.remove('show');
+  if (!reader.classList.contains('show')) document.body.style.overflow = '';
+}
+
+modalBookmark.addEventListener('click', () => {
+  if (activeComic) toggleBookmark(activeComic.id);
+});
+
+document.getElementById('modalClose').addEventListener('click', tutupModal);
+modalOverlay.addEventListener('click', (e) => { if (e.target === modalOverlay) tutupModal(); });
+
+/* Klik di mana saja → cek elemen yang diklik */
+document.addEventListener('click', (e) => {
+  const bm = e.target.closest('[data-bookmark]');
+  if (bm) {
+    e.stopPropagation();
+    toggleBookmark(bm.dataset.bookmark);
+    return;
+  }
+  const card = e.target.closest('.comic-card');
+  if (card) { bukaModal(card.dataset.id); return; }
+  const rank = e.target.closest('.ranking-list li');
+  if (rank && rank.dataset.id) { bukaModal(rank.dataset.id); return; }
+  const chp = e.target.closest('.chapter-item');
+  if (chp && chp.dataset.id) { bukaReader(chp.dataset.id, parseInt(chp.dataset.chapter)); return; }
+  const pick = e.target.closest('.chapter-picker-item');
+  if (pick && pick.dataset.id) {
+    tutupModal();
+    bukaReader(pick.dataset.id, parseInt(pick.dataset.chapter));
+    return;
+  }
+  const hero = e.target.closest('.btn-hero');
+  if (hero && hero.dataset.id) { bukaModal(hero.dataset.id); return; }
+});
